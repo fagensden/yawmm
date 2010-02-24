@@ -25,7 +25,6 @@ fatDevice fdevList[] = {
 	{ "sd",		"Wii SD Slot",					&__io_wiisd },
 	{ "usb",	"USB Mass Storage Device",		&__io_usbstorage },
 	{ "usb2",	"USB 2.0 Mass Storage Device",	&__io_wiiums },
-	//{ "ntfs0",	"NTFS partition",				NULL },
 	{ "gcsda",	"SD Gecko (Slot A)",			&__io_gcsda },
 	{ "gcsdb",	"SD Gecko (Slot B)",			&__io_gcsdb },
 };
@@ -270,11 +269,11 @@ void Menu_SelectIOS(void)
 		/* Load IOS */
 		ret = IOS_ReloadIOS(version);
 		if (mload_init() >= 0)
-                {
-                        data_elf my_data_elf;
-                        mload_elf((void *) ehcmodule_elf, &my_data_elf);
-                        mload_run_thread(my_data_elf.start, my_data_elf.stack, my_data_elf.size_stack, 0x47);
-                }
+        {
+            data_elf my_data_elf;
+			mload_elf((void *) ehcmodule_elf, &my_data_elf);
+            mload_run_thread(my_data_elf.start, my_data_elf.stack, my_data_elf.size_stack, 0x47);
+        }
 
 		/* Initialize subsystems */
 		Wpad_Init();
@@ -1055,18 +1054,18 @@ err:
 
 void Menu_Loop(void)
 {
-	u8 iosVersion;
-
+	//u8 iosVersion;
 	/* Select IOS menu */
 	Menu_SelectIOS();
 
 	/* Retrieve IOS version */
-	iosVersion = IOS_GetVersion();
+	//iosVersion = IOS_GetVersion();
 
 	/* NAND device menu */
-	if (iosVersion == CIOS_VERSION)
+	//if (iosVersion == CIOS_VERSION) //for some reason causes code dump if not on IOS249
+	//{
 		Menu_NandDevice();
-
+	//}	
 	for (;;) {
 		/* FAT device menu */
 		Menu_FatDevice();

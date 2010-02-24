@@ -142,6 +142,7 @@ void Disclaimer(void)
 
 int main(int argc, char **argv)
 {
+	//IOS_ReloadIOS(249);
 	/* Initialize subsystems */
 	Sys_Init();
 
