@@ -219,7 +219,20 @@ s32 Wad_Install(FILE *fp)
 		ret = -1;
 		goto out;
 	}
-	
+	if (tid == TITLE_ID(1, 2))
+	{
+		printf("\n    This is the System Mneu, installing the wrong regions SM\n    or not having the right IOS will brick your Wii");
+		printf("\n    Press A to continue.\n");
+		printf("    Press B skip.");
+		
+		u32 buttons = WaitButtons();
+		
+		if (!(buttons & WPAD_BUTTON_A))
+		{
+			ret = -1;
+			goto out;
+		}
+	}
 	/* WAD certificates */
 	ret = __Wad_ReadAlloc(fp, (void *)&p_certs, offset, header->certs_len);
 	if (ret < 0)
@@ -411,25 +424,25 @@ s32 Wad_Uninstall(FILE *fp)
 	}
 	if(tid  == TITLE_ID(0x10008, 0x48414B00 | 'E') || tid  == TITLE_ID(0x10008, 0x48414B00 | 'P') || tid  == TITLE_ID(0x10008, 0x48414B00 | 'J') || tid  == TITLE_ID(0x10008, 0x48414B00 | 'K'))
 	{
-		printf("\n    I can't let you do that Dave\n");
+		printf("\n    I won't uninstall the EULA\n");
 		ret = -1;
 		goto out;
 	}	
 	if(tid  == TITLE_ID(0x10008, 0x48414C00 | 'E') || tid  == TITLE_ID(0x10008, 0x48414C00 | 'P') || tid  == TITLE_ID(0x10008, 0x48414C00 | 'J') || tid  == TITLE_ID(0x10008, 0x48414C00 | 'K'))
 	{
-		printf("\n    I can't let you do that Dave\n");
+		printf("\n    I won't uninstall rgsel\n");
 		ret = -1;
 		goto out;
 	}	
 	if(tid  == get_title_ios(TITLE_ID(0x10008, 0x48414B00 | 'E')) || tid  == get_title_ios(TITLE_ID(0x10008, 0x48414B00 | 'P')) || tid  == get_title_ios(TITLE_ID(0x10008, 0x48414B00 | 'J')) || tid  == get_title_ios(TITLE_ID(0x10008, 0x48414B00 | 'K')))
 	{
-		printf("\n    I can't let you do that Dave\n");
+		printf("\n    I won't uninstall the EULAs IOS\n");
 		ret = -1;
 		goto out;
 	}	
 	if(tid  == get_title_ios(TITLE_ID(0x10008, 0x48414C00 | 'E')) || tid  == get_title_ios(TITLE_ID(0x10008, 0x48414C00 | 'P')) || tid  == get_title_ios(TITLE_ID(0x10008, 0x48414C00 | 'J')) || tid  == get_title_ios(TITLE_ID(0x10008, 0x48414C00 | 'K')))
 	{
-		printf("\n    I can't let you do that Dave\n");
+		printf("\n    I won't uninstall the rgsel IOS\n");
 		ret = -1;
 		goto out;
 	}

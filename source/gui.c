@@ -8,7 +8,7 @@
 #define CONSOLE_XCOORD		70
 #define CONSOLE_YCOORD		118
 #define CONSOLE_WIDTH		502
-#define CONSOLE_HEIGHT		328
+#define CONSOLE_HEIGHT		320
 
 
 s32 __Gui_DrawPng(void *img, u32 x, u32 y)
