@@ -521,7 +521,7 @@ int Menu_BatchProcessWads(fatFile *files, int fileCount, char *inFilePath, int i
 				ret = Wad_Install(fp);
 			}
 			
-			if (ret < 0) errors += 1;
+			if (ret < 0) errors += 1, thisFile->installstate = ret;
 			else success += 1;
 		
 			if (fp)
@@ -533,7 +533,41 @@ int Menu_BatchProcessWads(fatFile *files, int fileCount, char *inFilePath, int i
 	
 	printf("\n");
 	printf("    %d titles succeeded and %d failed...\n", success, errors);
+	
+	if (errors > 0)
+	{
+		printf("\n    Some operations failed");
+		printf("\n    Press A to list.\n");
+		printf("    Press B skip.\n");
 		
+		u32 buttons = WaitButtons();
+		
+		if ((buttons & WPAD_BUTTON_A))
+		{
+			Con_Clear();
+		
+			int i=0;
+			for (count = 0; count < fileCount; count++)
+			{
+				fatFile *thisFile = &files[count];
+		
+				if (thisFile->installstate <0)
+				{
+					char str[41];
+					strncpy(str, thisFile->filename, 40); //Only 40 chars to fit the screen
+					str[40]=0;
+					i++;
+					printf("    %s error %d\n", str, thisFile->installstate);
+					if( i == 17 )
+					{
+						printf("\n    Press any button to continue\n");
+						WaitButtons();
+						i = 0;
+					}
+				}
+			}
+		}
+	}
 	printf("\n    Press any button to continue...\n");
 	WaitButtons();
 	

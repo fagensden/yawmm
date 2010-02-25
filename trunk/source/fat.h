@@ -28,6 +28,8 @@ typedef struct {
 	char filename[128];
 	/* 1 = Batch Install, 2 = Batch Uninstall - Leathl */
 	int install;
+	
+	int installstate;
 
 	/* Filestat */
 	struct stat filestat;
