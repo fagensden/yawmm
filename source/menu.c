@@ -1088,18 +1088,20 @@ err:
 
 void Menu_Loop(void)
 {
-	//u8 iosVersion;
+	u8 iosVersion;
 	/* Select IOS menu */
 	Menu_SelectIOS();
 
 	/* Retrieve IOS version */
-	//iosVersion = IOS_GetVersion();
-
+	iosVersion = IOS_GetVersion();
+	
+	ndev = &ndevList[0];
+	
 	/* NAND device menu */
-	//if (iosVersion == CIOS_VERSION) //for some reason causes code dump if not on IOS249
-	//{
+	if (iosVersion == CIOS_VERSION) //for some reason causes code dump if not on IOS249
+	{
 		Menu_NandDevice();
-	//}	
+	}	
 	for (;;) {
 		/* FAT device menu */
 		Menu_FatDevice();
