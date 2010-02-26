@@ -6,6 +6,7 @@
 #include <ctype.h>
 #include <wiilight.h>
 
+#include "sys.h"
 #include "gui.h"
 #include "menu.h"
 #include "restart.h"
@@ -142,7 +143,7 @@ void Disclaimer(void)
 
 int main(int argc, char **argv)
 {
-	//IOS_ReloadIOS(249);
+	if(!loadIOS(249)) if(!loadIOS(202)) if(!loadIOS(222)) if(!loadIOS(223)) if(!loadIOS(224)) loadIOS(36);
 	/* Initialize subsystems */
 	Sys_Init();
 
@@ -195,6 +196,12 @@ int ReadConfigFile (char *configFilePath)
 
 	fatDevice *fdev = &fdevList[0];
 	s32 ret = Fat_Mount(fdev);
+	
+	if (ret < 0) 
+	{
+		fdev = &fdevList[2];
+		Fat_Mount(fdev);
+	}
 	
 	if (ret < 0) 
 	{

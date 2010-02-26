@@ -2,6 +2,8 @@
 #define _SYS_H_
 
 /* Prototypes */
+bool isIOSstub(u8 ios_number);
+bool loadIOS(int ios);
 void Sys_Init(void);
 void Sys_Reboot(void);
 void Sys_Shutdown(void);

@@ -5,6 +5,7 @@
 #include <ogcsys.h>
 #include <wiilight.h>
 
+#include "sys.h"
 #include "fat.h"
 #include "nand.h"
 #include "restart.h"
@@ -16,8 +17,7 @@
 #include "wpad.h"
 #include <ogc/pad.h>
 #include "globals.h"
-#include "mload.h"
-#include "ehcmodule_elf.h"
+
 
 /* FAT device list  */
 //static fatDevice fdevList[] = {
@@ -267,13 +267,8 @@ void Menu_SelectIOS(void)
 		//mload_close();
 		
 		/* Load IOS */
-		ret = IOS_ReloadIOS(version);
-		if (mload_init() >= 0)
-        {
-            data_elf my_data_elf;
-			mload_elf((void *) ehcmodule_elf, &my_data_elf);
-            mload_run_thread(my_data_elf.start, my_data_elf.stack, my_data_elf.size_stack, 0x47);
-        }
+		
+		if(!loadIOS(version)) Wpad_Init(), Menu_SelectIOS();
 
 		/* Initialize subsystems */
 		Wpad_Init();
