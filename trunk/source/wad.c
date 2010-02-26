@@ -286,7 +286,7 @@ s32 Wad_Install(FILE *fp)
 
 	/* Get TMD info */
 	tmd_data = (tmd *)SIGNATURE_PAYLOAD(p_tmd);
-	if(isIOSstub(TITLE_LOWER(tmd_data->sys_version)))
+	if(TITLE_LOWER(tmd_data->sys_version) != NULL && isIOSstub(TITLE_LOWER(tmd_data->sys_version)))
 	{
 		printf("\n    This Title wants IOS%i but the installed version\n    is a stub.\n", TITLE_LOWER(tmd_data->sys_version));
 		ret = -1;
