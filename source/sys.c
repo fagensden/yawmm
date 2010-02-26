@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <malloc.h>
 #include <ogcsys.h>
 
 #include "sys.h"
+#include "mload.h"
+#include "ehcmodule_elf.h"
 
 /* Constants */
 #define CERTS_LEN	0x280
@@ -10,6 +13,27 @@
 /* Variables */
 static const char certs_fs[] ATTRIBUTE_ALIGN(32) = "/sys/cert.sys";
 
+typedef struct _tmd_view_content_t
+{
+  uint32_t cid;
+  uint16_t index;
+  uint16_t type;
+  uint64_t size;
+} __attribute__((packed)) tmd_view_content_t;
+
+typedef struct _tmd_view_t
+{
+	uint8_t version; // 0x0000;
+	uint8_t filler[3];
+	uint64_t sys_version; //0x0004
+	uint64_t title_id; // 0x00c
+	uint32_t title_type; //0x0014
+	uint16_t group_id; //0x0018
+	uint8_t reserved[0x3e]; //0x001a this is the same reserved 0x3e bytes from the tmd
+	uint16_t title_version; //0x0058
+	uint16_t num_contents; //0x005a
+	tmd_view_content_t contents[]; //0x005c
+}__attribute__((packed)) tmd_view;
 
 void __Sys_ResetCallback(void)
 {
@@ -23,6 +47,73 @@ void __Sys_PowerCallback(void)
 	Sys_Shutdown();
 }
 
+bool isIOSstub(u8 ios_number) 
+{ 
+        u32 tmd_size; 
+        tmd_view *ios_tmd; 
+  
+        ES_GetTMDViewSize(0x0000000100000000ULL | ios_number, &tmd_size); 
+        if (!tmd_size) 
+        { 
+                //getting size failed. invalid or fake tmd for sure! 
+                //gprintf("failed to get tmd for ios %d\n",ios_number); 
+                return true; 
+        } 
+        ios_tmd = (tmd_view *)memalign( 32, (tmd_size+31)&(~31) ); 
+        if(!ios_tmd) 
+        { 
+                //gprintf("failed to mem align the TMD struct!\n"); 
+                return true; 
+        } 
+        memset(ios_tmd , 0, tmd_size); 
+        ES_GetTMDView(0x0000000100000000ULL | ios_number, (u8*)ios_tmd , tmd_size); 
+        //gprintf("IOS %d is rev %d(0x%x) with tmd size of %u and %u contents\n",ios_number,ios_tmd->title_version,ios_tmd->title_version,tmd_size,ios_tmd->num_contents); 
+        /*Stubs have a few things in common: 
+        - title version : it is mostly 65280 , or even better : in hex the last 2 digits are 0.  
+                example : IOS 60 rev 6400 = 0x1900 = 00 = stub 
+        - exception for IOS21 which is active, the tmd size is 592 bytes (or 140 with the views) 
+        - the stub ios' have 1 app of their own (type 0x1) and 2 shared apps (type 0x8001). 
+        eventho the 00 check seems to work fine , we'll only use other knowledge as well cause some 
+        people/applications install an ios with a stub rev >_> ...*/ 
+        u8 Version = ios_tmd->title_version; 
+ 
+        //version now contains the last 2 bytes. as said above, if this is 00, its a stub 
+        if ( Version == 0 ) 
+        { 
+                if ( ( ios_tmd->num_contents == 3) && (ios_tmd->contents[0].type == 1 && ios_tmd->contents[1].type == 0x8001 && ios_tmd->contents[2].type == 0x8001) ) 
+                { 
+                        //gprintf("IOS %d is a stub\n",ios_number); 
+                        free(ios_tmd); 
+                        return true; 
+                } 
+                else 
+                { 
+                        //gprintf("IOS %d is active\n",ios_number); 
+                        free(ios_tmd); 
+                        return false; 
+                } 
+        } 
+        //gprintf("IOS %d is active\n",ios_number); 
+        free(ios_tmd); 
+        return false; 
+} 
+ 
+
+bool loadIOS(int ios)
+{
+	if(isIOSstub(ios)) return false;
+	if(IOS_ReloadIOS(ios)>=0)
+	{
+		if (mload_init() >= 0)
+		{
+			data_elf my_data_elf;
+			mload_elf((void *) ehcmodule_elf, &my_data_elf);
+			mload_run_thread(my_data_elf.start, my_data_elf.stack, my_data_elf.size_stack, 0x47);
+		}
+		return true;
+	}
+	return false;
+}
 
 void Sys_Init(void)
 {

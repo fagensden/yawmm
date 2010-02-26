@@ -4,6 +4,7 @@
 #include <ogcsys.h>
 #include <ogc/pad.h>
 
+#include "sys.h"
 #include "title.h"
 #include "utils.h"
 #include "video.h"
@@ -221,7 +222,7 @@ s32 Wad_Install(FILE *fp)
 	}
 	if (tid == TITLE_ID(1, 2))
 	{
-		printf("\n    This is the System Mneu, installing the wrong regions SM\n    or not having the right IOS will brick your Wii");
+		printf("\n    This is the System Menu, installing the wrong regions SM\n    will break your Wii");
 		printf("\n    Press A to continue.\n");
 		printf("    Press B skip.");
 		
@@ -285,6 +286,12 @@ s32 Wad_Install(FILE *fp)
 
 	/* Get TMD info */
 	tmd_data = (tmd *)SIGNATURE_PAYLOAD(p_tmd);
+	if(isIOSstub(TITLE_LOWER(tmd_data->sys_version)))
+	{
+		printf("\n    This Title wants IOS%i but the installed version\n    is a stub.\n", TITLE_LOWER(tmd_data->sys_version));
+		ret = -1;
+		goto err;
+	}
 
 	/* Install contents */
 	for (cnt = 0; cnt < tmd_data->num_contents; cnt++) {
