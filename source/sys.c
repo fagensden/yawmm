@@ -102,6 +102,7 @@ bool isIOSstub(u8 ios_number)
 bool loadIOS(int ios)
 {
 	if(isIOSstub(ios)) return false;
+	mload_close();
 	if(IOS_ReloadIOS(ios)>=0)
 	{
 		if (mload_init() >= 0)

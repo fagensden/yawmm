@@ -552,7 +552,10 @@ int Menu_BatchProcessWads(fatFile *files, int fileCount, char *inFilePath, int i
 					strncpy(str, thisFile->filename, 40); //Only 40 chars to fit the screen
 					str[40]=0;
 					i++;
-					printf("    %s error %d\n", str, thisFile->installstate);
+					if(thisFile->installstate == -999) printf("    %s BRICK BLOCKED\n", str);
+					else if(thisFile->installstate == -998) printf("    %s Skipped\n", str);
+					else if(thisFile->installstate == -106) printf("    %s Not installed?\n", str);
+					else printf("    %s error %d\n", str, thisFile->installstate);
 					if( i == 17 )
 					{
 						printf("\n    Press any button to continue\n");

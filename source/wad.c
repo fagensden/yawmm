@@ -217,7 +217,7 @@ s32 Wad_Install(FILE *fp)
 	if (tid == TITLE_ID(1, 1))
 	{
 		printf("\n    I can't let you do that Dave\n");
-		ret = -1;
+		ret = -999;
 		goto out;
 	}
 	if (tid == TITLE_ID(1, 2))
@@ -289,10 +289,56 @@ s32 Wad_Install(FILE *fp)
 	if(TITLE_LOWER(tmd_data->sys_version) != NULL && isIOSstub(TITLE_LOWER(tmd_data->sys_version)))
 	{
 		printf("\n    This Title wants IOS%i but the installed version\n    is a stub.\n", TITLE_LOWER(tmd_data->sys_version));
-		ret = -1;
+		ret = -999;
 		goto err;
 	}
-
+	
+	if(get_title_ios(TITLE_ID(1, 2)) == tid)
+	{
+		if ( ( tmd_data->num_contents == 3) && (tmd_data->contents[0].type == 1 && tmd_data->contents[1].type == 0x8001 && tmd_data->contents[2].type == 0x8001) )
+		{
+			printf("\n    I won't install a stub System Menu IOS\n");
+			ret = -999;
+			goto err;
+		}
+	}
+	
+	if(tid  == get_title_ios(TITLE_ID(0x10008, 0x48414B00 | 'E')) || tid  == get_title_ios(TITLE_ID(0x10008, 0x48414B00 | 'P')) || tid  == get_title_ios(TITLE_ID(0x10008, 0x48414B00 | 'J')) || tid  == get_title_ios(TITLE_ID(0x10008, 0x48414B00 | 'K')))
+	{
+		if ( ( tmd_data->num_contents == 3) && (tmd_data->contents[0].type == 1 && tmd_data->contents[1].type == 0x8001 && tmd_data->contents[2].type == 0x8001) )
+		{
+			printf("\n    I won't install a stub EULA IOS\n");
+			ret = -999;
+			goto err;
+		}
+	}
+	
+	if(tid  == get_title_ios(TITLE_ID(0x10008, 0x48414C00 | 'E')) || tid  == get_title_ios(TITLE_ID(0x10008, 0x48414C00 | 'P')) || tid  == get_title_ios(TITLE_ID(0x10008, 0x48414C00 | 'J')) || tid  == get_title_ios(TITLE_ID(0x10008, 0x48414C00 | 'K')))
+	{
+		if ( ( tmd_data->num_contents == 3) && (tmd_data->contents[0].type == 1 && tmd_data->contents[1].type == 0x8001 && tmd_data->contents[2].type == 0x8001) )
+		{
+			printf("\n    I won't install a stub rgsel IOS\n");
+			ret = -999;
+			goto err;
+		}
+	}
+	if (tid == get_title_ios(TITLE_ID(0x10001, 0x48415858)) || tid == get_title_ios(TITLE_ID(0x10001, 0x4A4F4449)))
+	{
+		if ( ( tmd_data->num_contents == 3) && (tmd_data->contents[0].type == 1 && tmd_data->contents[1].type == 0x8001 && tmd_data->contents[2].type == 0x8001) )
+		{
+			printf("\n    Are you sure you wan't to install a stub HBC IOS?\n");
+			printf("\n    Press A to continue.\n");
+			printf("    Press B skip.");
+		
+			u32 buttons = WaitButtons();
+		
+			if (!(buttons & WPAD_BUTTON_A))
+			{
+				ret = -998;
+				goto err;
+			}
+		}
+	}
 	/* Install contents */
 	for (cnt = 0; cnt < tmd_data->num_contents; cnt++) {
 		tmd_content *content = &tmd_data->contents[cnt];
@@ -408,49 +454,49 @@ s32 Wad_Uninstall(FILE *fp)
 	if (TITLE_UPPER(tid) == 1 && get_title_ios(TITLE_ID(1, 2)) == 0)
 	{
 		printf("\n    I can't determine the System Menus IOS\nDeleting system titles is disabled\n");
-		ret = -1;
+		ret = -999;
 		goto out;
 	}
 	if (tid == TITLE_ID(1, 1))
 	{
 		printf("\n    I won't try to uninstall boot2\n");
-		ret = -1;
+		ret = -999;
 		goto out;
 	}
 	if (tid == TITLE_ID(1, 2))
 	{
 		printf("\n    I won't uninstall the System Menu\n");
-		ret = -1;
+		ret = -999;
 		goto out;
 	}
 	if(get_title_ios(TITLE_ID(1, 2)) == tid)
 	{
 		printf("\n    I won't uninstall the System Menus IOS\n");
-		ret = -1;
+		ret = -999;
 		goto out;
 	}
 	if(tid  == TITLE_ID(0x10008, 0x48414B00 | 'E') || tid  == TITLE_ID(0x10008, 0x48414B00 | 'P') || tid  == TITLE_ID(0x10008, 0x48414B00 | 'J') || tid  == TITLE_ID(0x10008, 0x48414B00 | 'K'))
 	{
 		printf("\n    I won't uninstall the EULA\n");
-		ret = -1;
+		ret = -999;
 		goto out;
 	}	
 	if(tid  == TITLE_ID(0x10008, 0x48414C00 | 'E') || tid  == TITLE_ID(0x10008, 0x48414C00 | 'P') || tid  == TITLE_ID(0x10008, 0x48414C00 | 'J') || tid  == TITLE_ID(0x10008, 0x48414C00 | 'K'))
 	{
 		printf("\n    I won't uninstall rgsel\n");
-		ret = -1;
+		ret = -999;
 		goto out;
 	}	
 	if(tid  == get_title_ios(TITLE_ID(0x10008, 0x48414B00 | 'E')) || tid  == get_title_ios(TITLE_ID(0x10008, 0x48414B00 | 'P')) || tid  == get_title_ios(TITLE_ID(0x10008, 0x48414B00 | 'J')) || tid  == get_title_ios(TITLE_ID(0x10008, 0x48414B00 | 'K')))
 	{
 		printf("\n    I won't uninstall the EULAs IOS\n");
-		ret = -1;
+		ret = -999;
 		goto out;
 	}	
 	if(tid  == get_title_ios(TITLE_ID(0x10008, 0x48414C00 | 'E')) || tid  == get_title_ios(TITLE_ID(0x10008, 0x48414C00 | 'P')) || tid  == get_title_ios(TITLE_ID(0x10008, 0x48414C00 | 'J')) || tid  == get_title_ios(TITLE_ID(0x10008, 0x48414C00 | 'K')))
 	{
 		printf("\n    I won't uninstall the rgsel IOS\n");
-		ret = -1;
+		ret = -999;
 		goto out;
 	}
 	if (tid == get_title_ios(TITLE_ID(0x10001, 0x48415858)) || tid == get_title_ios(TITLE_ID(0x10001, 0x4A4F4449)))
@@ -462,8 +508,10 @@ s32 Wad_Uninstall(FILE *fp)
 		u32 buttons = WaitButtons();
 		
 		if (!(buttons & WPAD_BUTTON_A))
-			ret = -1;
+		{
+			ret = -998;
 			goto out;
+		}
 	}
 
 	Con_ClearLine();
