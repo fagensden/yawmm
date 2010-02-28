@@ -105,7 +105,7 @@ bool loadIOS(int ios)
 	mload_close();
 	if(IOS_ReloadIOS(ios)>=0)
 	{
-		if (mload_init() >= 0)
+		if (IOS_GetVersion() != 249 && mload_init() >= 0)
 		{
 			data_elf my_data_elf;
 			mload_elf((void *) ehcmodule_elf, &my_data_elf);
