@@ -555,6 +555,8 @@ int Menu_BatchProcessWads(fatFile *files, int fileCount, char *inFilePath, int i
 					if(thisFile->installstate == -999) printf("    %s BRICK BLOCKED\n", str);
 					else if(thisFile->installstate == -998) printf("    %s Skipped\n", str);
 					else if(thisFile->installstate == -106) printf("    %s Not installed?\n", str);
+					else if(thisFile->installstate == -1036 ) printf("    %s Needed IOS missing\n", str);
+					else if(thisFile->installstate == -4100 ) printf("    %s No trucha bug?\n", str);
 					else printf("    %s error %d\n", str, thisFile->installstate);
 					if( i == 17 )
 					{
