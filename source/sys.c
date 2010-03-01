@@ -49,9 +49,13 @@ void __Sys_PowerCallback(void)
 
 bool isIOSstub(u8 ios_number) 
 { 
-        u32 tmd_size; 
+        u32 tmd_size, boot2version;
         tmd_view *ios_tmd; 
-  
+		
+		ES_GetBoot2Version(&boot2version);
+		
+		if((boot2version >= 5) && ( ios_number == 202 || ios_number == 222 || ios_number == 223 || ios_number == 224)) return true;
+		
         ES_GetTMDViewSize(0x0000000100000000ULL | ios_number, &tmd_size); 
         if (!tmd_size) 
         { 
@@ -76,7 +80,8 @@ bool isIOSstub(u8 ios_number)
         eventho the 00 check seems to work fine , we'll only use other knowledge as well cause some 
         people/applications install an ios with a stub rev >_> ...*/ 
         u8 Version = ios_tmd->title_version; 
- 
+		
+		if((boot2version >= 5) && (ios_number == 249 || ios_number == 250) && (Version < 18)) return true;
         //version now contains the last 2 bytes. as said above, if this is 00, its a stub 
         if ( Version == 0 ) 
         { 
@@ -105,11 +110,14 @@ bool loadIOS(int ios)
 	mload_close();
 	if(IOS_ReloadIOS(ios)>=0)
 	{
-		if (IOS_GetVersion() != 249 && mload_init() >= 0)
+		if (IOS_GetVersion() != 249 && IOS_GetVersion() != 250)
 		{
-			data_elf my_data_elf;
-			mload_elf((void *) ehcmodule_elf, &my_data_elf);
-			mload_run_thread(my_data_elf.start, my_data_elf.stack, my_data_elf.size_stack, 0x47);
+			if (mload_init() >= 0)
+			{
+				data_elf my_data_elf;
+				mload_elf((void *) ehcmodule_elf, &my_data_elf);
+				mload_run_thread(my_data_elf.start, my_data_elf.stack, my_data_elf.size_stack, 0x47);
+			}
 		}
 		return true;
 	}

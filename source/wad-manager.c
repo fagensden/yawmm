@@ -143,7 +143,7 @@ void Disclaimer(void)
 
 int main(int argc, char **argv)
 {
-	if(!loadIOS(249)) if(!loadIOS(202)) if(!loadIOS(222)) if(!loadIOS(223)) if(!loadIOS(224)) loadIOS(36);
+	if(!loadIOS(202)) if(!loadIOS(222)) if(!loadIOS(223)) if(!loadIOS(224)) if(!loadIOS(249)) loadIOS(36);
 	/* Initialize subsystems */
 	Sys_Init();
 
