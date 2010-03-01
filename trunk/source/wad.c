@@ -220,20 +220,6 @@ s32 Wad_Install(FILE *fp)
 		ret = -999;
 		goto out;
 	}
-	if (tid == TITLE_ID(1, 2))
-	{
-		printf("\n    This is the System Menu, installing the wrong regions SM\n    will break your Wii");
-		printf("\n    Press A to continue.\n");
-		printf("    Press B skip.");
-		
-		u32 buttons = WaitButtons();
-		
-		if (!(buttons & WPAD_BUTTON_A))
-		{
-			ret = -1;
-			goto out;
-		}
-	}
 	/* WAD certificates */
 	ret = __Wad_ReadAlloc(fp, (void *)&p_certs, offset, header->certs_len);
 	if (ret < 0)
@@ -265,27 +251,11 @@ s32 Wad_Install(FILE *fp)
 		offset += round_up(header->tmd_len, 64);
 
 	Con_ClearLine();
-
-	printf("\t\t>> Installing ticket...");
-	fflush(stdout);
-
-	/* Install ticket */
-	ret = ES_AddTicket(p_tik, header->tik_len, p_certs, header->certs_len, p_crl, header->crl_len);
-	if (ret < 0)
-		goto err;
-
-	Con_ClearLine();
-
-	printf("\r\t\t>> Installing title...");
-	fflush(stdout);
-
-	/* Install title */
-	ret = ES_AddTitleStart(p_tmd, header->tmd_len, p_certs, header->certs_len, p_crl, header->crl_len);
-	if (ret < 0)
-		goto err;
-
+	
 	/* Get TMD info */
+	
 	tmd_data = (tmd *)SIGNATURE_PAYLOAD(p_tmd);
+	
 	if(TITLE_LOWER(tmd_data->sys_version) != NULL && isIOSstub(TITLE_LOWER(tmd_data->sys_version)))
 	{
 		printf("\n    This Title wants IOS%i but the installed version\n    is a stub.\n", TITLE_LOWER(tmd_data->sys_version));
@@ -339,6 +309,40 @@ s32 Wad_Install(FILE *fp)
 			}
 		}
 	}
+	
+	if (tid == TITLE_ID(1, 2))
+	{
+		printf("\n    This is the System Menu, installing the wrong regions SM\n    will break your Wii");
+		printf("\n    Press A to continue.\n");
+		printf("    Press B skip.");
+		
+		u32 buttons = WaitButtons();
+		
+		if (!(buttons & WPAD_BUTTON_A))
+		{
+			ret = -1;
+			goto out;
+		}
+	}
+
+	printf("\t\t>> Installing ticket...");
+	fflush(stdout);
+
+	/* Install ticket */
+	ret = ES_AddTicket(p_tik, header->tik_len, p_certs, header->certs_len, p_crl, header->crl_len);
+	if (ret < 0)
+		goto err;
+
+	Con_ClearLine();
+
+	printf("\r\t\t>> Installing title...");
+	fflush(stdout);
+
+	/* Install title */
+	ret = ES_AddTitleStart(p_tmd, header->tmd_len, p_certs, header->certs_len, p_crl, header->crl_len);
+	if (ret < 0)
+		goto err;
+	
 	/* Install contents */
 	for (cnt = 0; cnt < tmd_data->num_contents; cnt++) {
 		tmd_content *content = &tmd_data->contents[cnt];

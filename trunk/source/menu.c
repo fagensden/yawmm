@@ -722,7 +722,7 @@ void Menu_WadList(void)
     // wiiNinja: check for malloc error
     if (tmpPath == NULL)
     {
-        ret = -999; // What am I gonna use here?
+        ret = -997; // What am I gonna use here?
 		printf(" ERROR! Out of memory (ret = %d)\n", ret);
         return;
     }
@@ -1098,7 +1098,7 @@ void Menu_Loop(void)
 	ndev = &ndevList[0];
 	
 	/* NAND device menu */
-	if (iosVersion == CIOS_VERSION) //for some reason causes code dump if not on IOS249
+	if (iosVersion == CIOS_VERSION || iosVersion == 250)
 	{
 		Menu_NandDevice();
 	}	
