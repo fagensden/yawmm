@@ -42,6 +42,10 @@ typedef struct
 	int cIOSVersion;
 	int fatDeviceIndex;
 	int nandDeviceIndex;
+	const char *smbuser;
+	const char *smbpassword;
+	const char *share;
+	const char *ip;
 } CONFIG;
 
 

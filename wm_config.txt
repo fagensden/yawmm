@@ -8,11 +8,18 @@ Password=
 StartupPath=/wad
 
 ; cIOS: 249, 222, whatever
-cIOSVersion=249
+:cIOSVersion=249
 
 ; FatDevice: sd usb usb2 gcsda gcsdb
-FatDevice=sd
+:FatDevice=sd
 
 ; NANDDevice: Disable SD USB
 ; Note that WM will prompt for NAND device only if you selected cIOS=249
-NANDDevice=Disable
+:NANDDevice=Disable
+
+: Settings for SMB shares
+
+:SMBUser=
+:SMBPassword=
+:SMBShare=
+:SMBhostIP=

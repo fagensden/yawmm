@@ -18,6 +18,30 @@
 // Turn upper and lower into a full title ID
 #define TITLE_LOWER(x)		((u32)(x))
 
+typedef struct {
+	int version;
+	int region;
+
+} SMRegion;
+
+SMRegion regionlist[] = {
+	{33, 'X'},
+	{97, 'E'},  {128, 'J'}, {130, 'P'},
+	{162, 'P'},
+	{192, 'J'}, {193, 'E'}, {194, 'P'},
+	{224, 'J'}, {225, 'E'}, {226, 'P'},
+	{256, 'J'}, {257, 'E'}, {258, 'P'},
+	{288, 'J'}, {289, 'E'}, {290, 'P'},
+	{352, 'J'}, {353, 'E'}, {354, 'P'}, {326, 'K'},
+	{384, 'J'}, {385, 'E'}, {386, 'P'},
+	{390, 'K'},
+	{416, 'J'}, {417, 'E'}, {418, 'P'},
+	{448, 'J'}, {449, 'E'}, {450, 'P'}, {454, 'K'},
+	{480, 'J'}, {481, 'E'}, {482, 'P'}, {486, 'K'},
+};
+
+#define NB_SM		(sizeof(regionlist) / sizeof(SMRegion))
+
 u32 WaitButtons(void);
 u32 be32(const u8 *p)
 {
@@ -94,7 +118,35 @@ u64 get_title_ios(u64 title) {
 			return t->sys_version;
 		}
 		
+		
 	} 
+	return 0;
+}
+
+int get_sm_region_basic()
+{
+	u32 tmd_size;
+		
+	u64 title = TITLE_ID(1, 2);
+	static u8 tmd_buf[MAX_SIGNED_TMD_SIZE] ATTRIBUTE_ALIGN(32);
+	
+	int ret = ES_GetStoredTMDSize(title, &tmd_size);
+		
+	// Some of this code adapted from bushing's title_lister.c
+	signed_blob *s_tmd = (signed_blob *)tmd_buf;
+	ret = ES_GetStoredTMD(title, s_tmd, tmd_size);
+	if (ret < 0){
+		//printf("Error! ES_GetStoredTMD: %d\n", ret);
+		return -1;
+	}
+	tmd *t = SIGNATURE_PAYLOAD(s_tmd);
+	ret = t->title_version;
+	int i = 0;
+	while( i <= NB_SM)
+	{
+		if(	regionlist[i].version == ret) return regionlist[i].region;
+		i++;
+	}
 	return 0;
 }
 
@@ -214,6 +266,7 @@ s32 Wad_Install(FILE *fp)
 		offset += round_up(header->header_len, 64);
 	//Don't try to install boot2
 	__Wad_GetTitleID(fp, header, &tid);
+	
 	if (tid == TITLE_ID(1, 1))
 	{
 		printf("\n    I can't let you do that Dave\n");
@@ -312,16 +365,32 @@ s32 Wad_Install(FILE *fp)
 	
 	if (tid == TITLE_ID(1, 2))
 	{
-		printf("\n    This is the System Menu, installing the wrong regions SM\n    will break your Wii");
-		printf("\n    Press A to continue.\n");
-		printf("    Press B skip.");
-		
-		u32 buttons = WaitButtons();
-		
-		if (!(buttons & WPAD_BUTTON_A))
+		if(get_sm_region_basic() == 0)
 		{
-			ret = -1;
-			goto out;
+			printf("\n    Can't get the SM region\n    Please check the site for updates\n");
+			ret = -999;
+			goto err;
+		}
+		int i, ret = -1;
+		for(i = 0; i <= NB_SM; i++)
+		{
+			if(	regionlist[i].version == tmd_data->title_version)
+			{
+				ret = 1;
+				break;
+			}
+		}
+		if(ret -1)
+		{
+			printf("\n    Can't get the SM region\n    Please check the site for updates\n");
+			ret = -999;
+			goto err;
+		}
+		if( get_sm_region_basic() != regionlist[i].region)
+		{
+			printf("\n    I won't install the wrong regions SM\n");
+			ret = -999;
+			goto err;
 		}
 	}
 
@@ -479,30 +548,6 @@ s32 Wad_Uninstall(FILE *fp)
 		ret = -999;
 		goto out;
 	}
-	if(tid  == TITLE_ID(0x10008, 0x48414B00 | 'E') || tid  == TITLE_ID(0x10008, 0x48414B00 | 'P') || tid  == TITLE_ID(0x10008, 0x48414B00 | 'J') || tid  == TITLE_ID(0x10008, 0x48414B00 | 'K'))
-	{
-		printf("\n    I won't uninstall the EULA\n");
-		ret = -999;
-		goto out;
-	}	
-	if(tid  == TITLE_ID(0x10008, 0x48414C00 | 'E') || tid  == TITLE_ID(0x10008, 0x48414C00 | 'P') || tid  == TITLE_ID(0x10008, 0x48414C00 | 'J') || tid  == TITLE_ID(0x10008, 0x48414C00 | 'K'))
-	{
-		printf("\n    I won't uninstall rgsel\n");
-		ret = -999;
-		goto out;
-	}	
-	if(tid  == get_title_ios(TITLE_ID(0x10008, 0x48414B00 | 'E')) || tid  == get_title_ios(TITLE_ID(0x10008, 0x48414B00 | 'P')) || tid  == get_title_ios(TITLE_ID(0x10008, 0x48414B00 | 'J')) || tid  == get_title_ios(TITLE_ID(0x10008, 0x48414B00 | 'K')))
-	{
-		printf("\n    I won't uninstall the EULAs IOS\n");
-		ret = -999;
-		goto out;
-	}	
-	if(tid  == get_title_ios(TITLE_ID(0x10008, 0x48414C00 | 'E')) || tid  == get_title_ios(TITLE_ID(0x10008, 0x48414C00 | 'P')) || tid  == get_title_ios(TITLE_ID(0x10008, 0x48414C00 | 'J')) || tid  == get_title_ios(TITLE_ID(0x10008, 0x48414C00 | 'K')))
-	{
-		printf("\n    I won't uninstall the rgsel IOS\n");
-		ret = -999;
-		goto out;
-	}
 	if (tid == get_title_ios(TITLE_ID(0x10001, 0x48415858)) || tid == get_title_ios(TITLE_ID(0x10001, 0x4A4F4449)))
 	{
 		printf("\n    This is the HBCs IOS, uninstalling will break the HBC!\n");
@@ -516,6 +561,37 @@ s32 Wad_Uninstall(FILE *fp)
 			ret = -998;
 			goto out;
 		}
+	}
+	if((tid  == TITLE_ID(0x10008, 0x48414B00 | 'E') || tid  == TITLE_ID(0x10008, 0x48414B00 | 'P') || tid  == TITLE_ID(0x10008, 0x48414B00 | 'J') || tid  == TITLE_ID(0x10008, 0x48414B00 | 'K') 
+		|| (tid  == TITLE_ID(0x10008, 0x48414C00 | 'E') || tid  == TITLE_ID(0x10008, 0x48414C00 | 'P') || tid  == TITLE_ID(0x10008, 0x48414C00 | 'J') || tid  == TITLE_ID(0x10008, 0x48414C00 | 'K'))) && get_sm_region_basic() == 0)
+	{
+		printf("\n    Can't get the SM region\n    Please check the site for updates\n");
+		ret = -999;
+		goto out;
+	}
+	if(tid  == TITLE_ID(0x10008, 0x48414B00 | get_sm_region_basic()))
+	{
+		printf("\n    I won't uninstall the EULA\n");
+		ret = -999;
+		goto out;
+	}	
+	if(tid  == TITLE_ID(0x10008, 0x48414C00 | get_sm_region_basic()))
+	{
+		printf("\n    I won't uninstall rgsel\n");
+		ret = -999;
+		goto out;
+	}	
+	if(tid  == get_title_ios(TITLE_ID(0x10008, 0x48414B00 | get_sm_region_basic())))
+	{
+		printf("\n    I won't uninstall the EULAs IOS\n");
+		ret = -999;
+		goto out;
+	}	
+	if(tid  == get_title_ios(TITLE_ID(0x10008, 0x48414C00 | get_sm_region_basic())))
+	{
+		printf("\n    I won't uninstall the rgsel IOS\n");
+		ret = -999;
+		goto out;
 	}
 
 	Con_ClearLine();
@@ -570,6 +646,5 @@ out:
 	/* Free memory */
 	if (header)
 		free(header);
-
 	return ret;
 }

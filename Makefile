@@ -20,7 +20,7 @@ include $(DEVKITPPC)/wii_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
-SOURCES		:=	source include source/libpng source/libpng/pngu
+SOURCES		:=	source include source/libtinysmb source/libpng source/libpng/pngu
 DATA		:=	data  
 INCLUDES	:=
 
@@ -132,6 +132,10 @@ $(OUTPUT).elf: $(OFILES)
 	$(bin2o)
 	
 %.elf.o	:	%.elf
+	@echo $(notdir $<)
+	$(bin2o)
+
+%.dat.o	:	%.dat
 	@echo $(notdir $<)
 	$(bin2o)
 
