@@ -143,7 +143,15 @@ void Disclaimer(void)
 
 int main(int argc, char **argv)
 {
-	if(!loadIOS(202)) if(!loadIOS(222)) if(!loadIOS(223)) if(!loadIOS(224)) if(!loadIOS(249)) loadIOS(36);
+	u32 boot2version;
+	ES_GetBoot2Version(&boot2version);
+		
+	if(boot2version < 5) 
+	{
+		if(!loadIOS(202)) if(!loadIOS(222)) if(!loadIOS(223)) if(!loadIOS(224)) if(!loadIOS(249)) loadIOS(36);
+	}else{
+		if(!loadIOS(249)) loadIOS(36);
+	}
 	/* Initialize subsystems */
 	Sys_Init();
 

@@ -27,6 +27,7 @@ fatDevice fdevList[] = {
 	{ "usb2",	"USB 2.0 Mass Storage Device",	&__io_wiiums },
 	{ "gcsda",	"SD Gecko (Slot A)",			&__io_gcsda },
 	{ "gcsdb",	"SD Gecko (Slot B)",			&__io_gcsdb },
+	//{ "smb",	"SMB share",					NULL },
 };
 
 /* NAND device list */
@@ -726,7 +727,7 @@ void Menu_WadList(void)
 		printf(" ERROR! Out of memory (ret = %d)\n", ret);
         return;
     }
-
+	
 	printf("[+] Retrieving file list...");
 	fflush(stdout);
 	
@@ -901,6 +902,7 @@ getList:
 				  installCnt += 1;
 				  uninstallCnt -= 1;
 			  }
+			  selected++;
 			}
 		}
 		
@@ -1098,7 +1100,7 @@ void Menu_Loop(void)
 	ndev = &ndevList[0];
 	
 	/* NAND device menu */
-	if (iosVersion == CIOS_VERSION || iosVersion == 250)
+	if ((iosVersion == CIOS_VERSION || iosVersion == 250) && IOS_GetRevision() >13)
 	{
 		Menu_NandDevice();
 	}	
