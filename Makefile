@@ -3,9 +3,6 @@
 #---------------------------------------------------------------------------------
 .SUFFIXES:
 #---------------------------------------------------------------------------------
-#DEVKITPRO	= /opt/devkitPPC
-#DEVKITPPC	= /opt/devkitPPC
-
 ifeq ($(strip $(DEVKITPPC)),)
 $(error "Please set DEVKITPPC in your environment. export DEVKITPPC=<path to>devkitPPC")
 endif
@@ -18,55 +15,56 @@ include $(DEVKITPPC)/wii_rules
 # SOURCES is a list of directories containing source code
 # INCLUDES is a list of directories containing extra header files
 #---------------------------------------------------------------------------------
-TARGET		:=	$(notdir $(CURDIR))
+TARGET		:=	boot
 BUILD		:=	build
-SOURCES		:=	source include source/libtinysmb source/libpng source/libpng/pngu
-DATA		:=	data  
-INCLUDES	:=
+SOURCES		:=	source source/libwiigui source/images source/fonts \
+				source/sounds source/wad source/network source/xml source/nand source/pngu
+DATA		:=	data
+INCLUDES	:=	source
+
 
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
 
-CFLAGS	= -Os -Wall $(MACHDEP) $(INCLUDE)
-CXXFLAGS	=	$(CFLAGS)
-
-LDFLAGS	=	$(MACHDEP) -Wl,-Map,$(notdir $@).map
+CFLAGS		=	-g -O2 -Wall $(MACHDEP) $(INCLUDE)
+CXXFLAGS	=	-save-temps -Xassembler -aln=$@.lst $(CFLAGS)
+LDFLAGS		=	-g $(MACHDEP) -Wl,-Map,$(notdir $@).map
 
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS	:= -ltinysmb -lpng -lfat -lwiiuse -lbte -logc -lm -lz -lwiilight
-
+LIBS :=	-lpng -lntfs -ltinysmb -lz -lfat -lwiiuse -lbte -lasnd -logc -lvorbisidec -lfreetype -lmxml
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
 # include and lib
 #---------------------------------------------------------------------------------
-LIBDIRS	:=	$(CURDIR) $(PORTLIBS)
-
+LIBDIRS	:= $(PORTLIBS) $(CURDIR)
 #---------------------------------------------------------------------------------
 # no real need to edit anything past this point unless you need to add additional
 # rules for different file extensions
 #---------------------------------------------------------------------------------
 ifneq ($(BUILD),$(notdir $(CURDIR)))
 #---------------------------------------------------------------------------------
-
-export OUTPUT	:=	$(CURDIR)/$(TARGET)
-
+export PROJECTDIR := $(CURDIR)
+export OUTPUT	:=	$(CURDIR)/$(TARGETDIR)/$(TARGET)
 export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
 					$(foreach dir,$(DATA),$(CURDIR)/$(dir))
-
 export DEPSDIR	:=	$(CURDIR)/$(BUILD)
 
 #---------------------------------------------------------------------------------
 # automatically build a list of object files for our project
 #---------------------------------------------------------------------------------
-CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
-CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
+export CFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
+export CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
 sFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
 SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.S)))
 BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
-
+TTFFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.ttf)))
+PNGFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.png)))
+OGGFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.ogg)))
+PCMFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.pcm)))
+	
 #---------------------------------------------------------------------------------
 # use CXX for linking C++ projects, CC for standard C
 #---------------------------------------------------------------------------------
@@ -78,12 +76,14 @@ endif
 
 export OFILES	:=	$(addsuffix .o,$(BINFILES)) \
 					$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) \
-					$(sFILES:.s=.o) $(SFILES:.S=.o)
+					$(sFILES:.s=.o) $(SFILES:.S=.o) \
+					$(TTFFILES:.ttf=.ttf.o) $(PNGFILES:.png=.png.o) \
+					$(OGGFILES:.ogg=.ogg.o) $(PCMFILES:.pcm=.pcm.o)
 
 #---------------------------------------------------------------------------------
 # build a list of include paths
 #---------------------------------------------------------------------------------
-export INCLUDE	:=	$(foreach dir,$(INCLUDES), -iquote $(CURDIR)/$(dir)) \
+export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
 					$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
 					-I$(CURDIR)/$(BUILD) \
 					-I$(LIBOGC_INC)
@@ -109,8 +109,15 @@ clean:
 
 #---------------------------------------------------------------------------------
 run:
-	wiiload $(TARGET).dol
+	wiiload $(OUTPUT).dol
 
+#---------------------------------------------------------------------------------
+reload:
+	wiiload -r $(OUTPUT).dol
+#---------------------------------------------------------------------------------      
+release:
+	make
+	cp boot.dol ./HBC/wiigui/boot.dol
 
 #---------------------------------------------------------------------------------
 else
@@ -124,24 +131,37 @@ $(OUTPUT).dol: $(OUTPUT).elf
 $(OUTPUT).elf: $(OFILES)
 
 #---------------------------------------------------------------------------------
-# This rule links in binary data with the .jpg extension
+# This rule links in binary data with .ttf, .png, and .mp3 extensions
 #---------------------------------------------------------------------------------
-%.jpg.o	:	%.jpg
-#---------------------------------------------------------------------------------
+%.elf.o : %.elf
+	@echo $(notdir $<)
+	$(bin2o)
+
+%.ttf.o : %.ttf
+	@echo $(notdir $<)
+	$(bin2o)
+
+%.png.o : %.png
 	@echo $(notdir $<)
 	$(bin2o)
 	
-%.elf.o	:	%.elf
+%.ogg.o : %.ogg
 	@echo $(notdir $<)
 	$(bin2o)
-
+	
+%.pcm.o : %.pcm
+	@echo $(notdir $<)
+	$(bin2o)
+	
+%.certs.o	:	%.certs
+	@echo $(notdir $<)
+	$(bin2o)
 %.dat.o	:	%.dat
 	@echo $(notdir $<)
 	$(bin2o)
-
+	
 -include $(DEPENDS)
 
 #---------------------------------------------------------------------------------
 endif
 #---------------------------------------------------------------------------------
-

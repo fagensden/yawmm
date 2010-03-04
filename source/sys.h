@@ -2,12 +2,14 @@
 #define _SYS_H_
 
 /* Prototypes */
-bool isIOSstub(u8 ios_number);
-bool loadIOS(int ios);
 void Sys_Init(void);
 void Sys_Reboot(void);
 void Sys_Shutdown(void);
+void Sys_ShutdownToIdel(void);
+void Sys_ShutdownToStandby(void);
 void Sys_LoadMenu(void);
-s32  Sys_GetCerts(signed_blob **, u32 *);
+void Sys_BackToLoader(void);
+bool isIOSstub(u8 ios_number);
+bool loadIOS(int IOS);
 
 #endif
