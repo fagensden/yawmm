@@ -196,7 +196,7 @@ int ReadConfigFile (char *configFilePath)
     int retval = 0;
 	FILE *fptr;
 	char *tmpStr = malloc (MAX_FILE_PATH_LEN);
-	char tmpOutStr [40];
+	char tmpOutStr [40], path[128];
 	int i;
 
 	if (tmpStr == NULL)
@@ -204,11 +204,13 @@ int ReadConfigFile (char *configFilePath)
 
 	fatDevice *fdev = &fdevList[0];
 	s32 ret = Fat_Mount(fdev);
+	snprintf(path, sizeof(path), "%s%s", fdev->mount, configFilePath);
 	
 	if (ret < 0) 
 	{
 		fdev = &fdevList[2];
 		Fat_Mount(fdev);
+		snprintf(path, sizeof(path), "%s%s", fdev->mount, configFilePath);
 	}
 	
 	if (ret < 0) 
@@ -220,7 +222,7 @@ int ReadConfigFile (char *configFilePath)
 	else
 	{
 		// Read the file
-		fptr = fopen (configFilePath, "rb");
+		fptr = fopen (path, "rb");
 		if (fptr != NULL)
 		{	
 			// Read the options

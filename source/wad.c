@@ -26,7 +26,7 @@ typedef struct {
 
 SMRegion regionlist[] = {
 	{33, 'X'},
-	{97, 'E'},  {128, 'J'}, {130, 'P'},
+	{128, 'J'}, {97, 'E'}, {130, 'P'},
 	{162, 'P'},
 	{192, 'J'}, {193, 'E'}, {194, 'P'},
 	{224, 'J'}, {225, 'E'}, {226, 'P'},
@@ -43,6 +43,7 @@ SMRegion regionlist[] = {
 #define NB_SM		(sizeof(regionlist) / sizeof(SMRegion))
 
 u32 WaitButtons(void);
+
 u32 be32(const u8 *p)
 {
 	return (p[0] << 24) | (p[1] << 16) | (p[2] << 8) | p[3];

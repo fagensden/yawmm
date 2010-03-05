@@ -3,6 +3,10 @@
 #include <ogcsys.h>
 
 #include "video.h"
+#include "fat.h"
+#include "menu.h"
+#include "nand.h"
+#include "globals.h"
 
 /* Constants */
 #define CONSOLE_XCOORD		70
@@ -18,13 +22,26 @@ s32 __Gui_DrawPng(void *img, u32 x, u32 y)
 
 	s32 ret;
 
+	fatDevice *fdev = &fdevList[0];
+	ret = Fat_Mount(fdev);
+	if (ret >= 0) ctx = PNGU_SelectImageFromDevice ("sd:/wad/background.png");
+	
+	if (ret < 0) 
+	{
+		fdev = &fdevList[2];
+		Fat_Mount(fdev);
+		if (ret >= 0) ctx = PNGU_SelectImageFromDevice ("usb2:/wad/background.png");
+	}
+	
+	if(!ctx)
+	{
 	/* Select PNG data */
 	ctx = PNGU_SelectImageFromBuffer(img);
 	if (!ctx) {
 		ret = -1;
 		goto out;
 	}
-
+	}
 	/* Get image properties */
 	ret = PNGU_GetImageProperties(ctx, &imgProp);
 	if (ret != PNGU_OK) {
@@ -56,7 +73,7 @@ void Gui_InitConsole(void)
 void Gui_DrawBackground(void)
 {
 	extern char bgData[];
-
+	
 	/* Draw background */
 	__Gui_DrawPng(bgData, 0, 0);
 } 

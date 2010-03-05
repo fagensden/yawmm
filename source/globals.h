@@ -13,7 +13,8 @@
 #define MAX_FAT_DEVICE_LENGTH  	10
 #define MAX_NAND_DEVICE_LENGTH  10
 
-#define WM_CONFIG_FILE_PATH "sd:/wad/wm_config.txt"
+#define WM_CONFIG_FILE_PATH ":/wad/wm_config.txt"
+#define WM_BACKGROUND_PATH ":/wad/background.png"
 
 // These are indices into the fatDevice fdevList
 #define FAT_DEVICE_INDEX_WII_SD  0
