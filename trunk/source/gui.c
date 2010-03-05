@@ -14,6 +14,17 @@
 #define CONSOLE_WIDTH		502
 #define CONSOLE_HEIGHT		320
 
+bool file_exists(const char * filename)
+{
+	FILE * file;
+    if (file = fopen(filename, "r"))
+    {
+        fclose(file);
+        return true;
+    }
+    return false;
+}
+
 
 s32 __Gui_DrawPng(void *img, u32 x, u32 y)
 {
@@ -24,13 +35,13 @@ s32 __Gui_DrawPng(void *img, u32 x, u32 y)
 
 	fatDevice *fdev = &fdevList[0];
 	ret = Fat_Mount(fdev);
-	if (ret >= 0) ctx = PNGU_SelectImageFromDevice ("sd:/wad/background.png");
+	if (file_exists("sd:/wad/background.png")) ctx = PNGU_SelectImageFromDevice ("sd:/wad/background.png");
 	
 	if (ret < 0) 
 	{
 		fdev = &fdevList[2];
 		Fat_Mount(fdev);
-		if (ret >= 0) ctx = PNGU_SelectImageFromDevice ("usb2:/wad/background.png");
+		if (file_exists("usb:/wad/background.png")) ctx = PNGU_SelectImageFromDevice ("usb2:/wad/background.png");
 	}
 	
 	if(!ctx)
