@@ -837,16 +837,17 @@ getList:
 
 		/* DPAD buttons */
 		if (buttons & (WPAD_BUTTON_UP | WPAD_BUTTON_LEFT)) {
-			selected -= (buttons & WPAD_BUTTON_LEFT) ? ENTRIES_PER_PAGE : 1;
-
-			if (selected <= -1)
-				selected = (fileCnt - 1);
-		}
-		if (buttons & (WPAD_BUTTON_DOWN | WPAD_BUTTON_RIGHT)) {
-			selected += (buttons & WPAD_BUTTON_RIGHT) ? ENTRIES_PER_PAGE : 1;
+			selected += (buttons & WPAD_BUTTON_LEFT) ? ENTRIES_PER_PAGE : 1;
 
 			if (selected >= fileCnt)
 				selected = 0;
+				
+		}
+		if (buttons & (WPAD_BUTTON_DOWN | WPAD_BUTTON_RIGHT)) {
+			selected -= (buttons & WPAD_BUTTON_RIGHT) ? ENTRIES_PER_PAGE : 1;
+
+			if (selected <= -1)
+				selected = (fileCnt - 1);
 		}
 
 		/* HOME button */
