@@ -915,6 +915,9 @@ getList:
 				  uninstallCnt -= 1;
 			  }
 			  selected++;
+			  
+			  if (selected >= fileCnt)
+				selected = 0;
 			}
 		}
 		
@@ -968,6 +971,10 @@ getList:
 				
 				uninstallCnt -= 1;
 			}
+			 selected++;
+			  
+			  if (selected >= fileCnt)
+				selected = 0;
 			}
 		}
 		
