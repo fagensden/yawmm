@@ -143,7 +143,6 @@ void Disclaimer(void)
 
 int main(int argc, char **argv)
 {
-	u32 boot2version;
 	ES_GetBoot2Version(&boot2version);
 		
 	if(boot2version < 5) 

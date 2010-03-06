@@ -49,10 +49,9 @@ void __Sys_PowerCallback(void)
 
 bool isIOSstub(u8 ios_number) 
 { 
-        u32 tmd_size, boot2version;
+        u32 tmd_size;
         tmd_view *ios_tmd; 
 		
-		ES_GetBoot2Version(&boot2version);
 		
 		if((boot2version >= 5) && ( ios_number == 202 || ios_number == 222 || ios_number == 223 || ios_number == 224)) return true;
 		
