@@ -836,15 +836,26 @@ getList:
 		u32 buttons = WaitButtons();
 
 		/* DPAD buttons */
-		if (buttons & (WPAD_BUTTON_UP | WPAD_BUTTON_LEFT)) {
-			selected += (buttons & WPAD_BUTTON_LEFT) ? ENTRIES_PER_PAGE : 1;
+		if (buttons & WPAD_BUTTON_UP) {
+			selected--;
+
+			if (selected <= -1)
+				selected = (fileCnt - 1);
+		}
+		if (buttons & WPAD_BUTTON_LEFT) {
+			selected = selected + ENTRIES_PER_PAGE;
+
+			if (selected >= fileCnt)
+				selected = 0;	
+		}
+		if (buttons & WPAD_BUTTON_DOWN) {
+			selected ++;
 
 			if (selected >= fileCnt)
 				selected = 0;
-				
 		}
-		if (buttons & (WPAD_BUTTON_DOWN | WPAD_BUTTON_RIGHT)) {
-			selected -= (buttons & WPAD_BUTTON_RIGHT) ? ENTRIES_PER_PAGE : 1;
+			if (buttons & WPAD_BUTTON_RIGHT) {
+				selected = selected - ENTRIES_PER_PAGE;
 
 			if (selected <= -1)
 				selected = (fileCnt - 1);
