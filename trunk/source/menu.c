@@ -517,8 +517,10 @@ int Menu_BatchProcessWads(fatFile *files, int fileCount, char *inFilePath, int i
 				ret = Wad_Install(fp);
 			}
 			
-			if (ret < 0) errors += 1, thisFile->installstate = ret;
+			if (ret < 0) errors += 1;
 			else success += 1;
+			
+			thisFile->installstate = ret;
 		
 			if (fp)
 				fclose(fp);

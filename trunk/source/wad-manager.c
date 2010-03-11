@@ -208,7 +208,8 @@ int ReadConfigFile (char *configFilePath)
 	if (ret < 0) 
 	{
 		fdev = &fdevList[2];
-		Fat_Mount(fdev);
+		ret = Fat_Mount(fdev);
+		snprintf(path, sizeof(path), "%s%s", fdev->mount, configFilePath);
 		snprintf(path, sizeof(path), "%s%s", fdev->mount, configFilePath);
 	}
 	

@@ -1,4 +1,4 @@
-                    =YET ANOTHER WAD MANAGER MOD (YAWMM)=
+                     =YET ANOTHER WAD MANAGER MOD (YAWMM)=
 
 ==[ DISCLAIMER ]:==
 
@@ -52,6 +52,8 @@
   To use the NAND emulation is necessary to have a COMPLETE copy
   of the NAND filesystem in the root of the FAT device.
 
+  This will not install fakesigned wads with cIOS249 rev18+ or 
+  Hermes cIOS 202/223/224 v5 unless IOS 38 is used as a base.
 
 ==;[ CONFIG FILE USAGE ]:==
 
@@ -106,11 +108,19 @@
 
   * YAWMM (cwstjdenobs)
     * Hold +/- for 2 seconds to select all items in a directory.
-    * Supports Hermes v4 cIOS. Mainly useful if 202 works best for your HDD/SDHC card.
-    * IOS selector no longer crashes all the time.
-    * Will not uninstall The System Menu, EULA, rgsel, or their IOSs.
+    * Supports Hermes v4/v5 cIOS. Mainly useful if 202 works best for your HDD/SDHC card.
+    * More detailed failed report after batch un/installs.
+    * Will not uninstall The System Menu, the SM's region EULA or rgsel, or their IOSs.
+    * Will not install the wrong regions SM.
+    * Will not load stub IOS.
+    * Will not install titles if they rely on a stub IOS.
+    * Will not install stub SM, EULA and rgsel IOS.
+	* Will not install a SM lower than 4.0 on a boot2v4 Wii.
     * Gives a warning when uninstalling the HBCs IOS.
-
+    * Read config file from usb.
+    * Can load an alternative background from /wad/background.png.
+    * Won't load incompatible cIOS in SNEEK.
+  
   * Wad Manager Multi-Mod (Leathl) v3:
     * Reassigned the buttons again (Read Usage section)
     * Shortened on-screen instructions down to 2 lines
