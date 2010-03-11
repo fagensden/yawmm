@@ -81,6 +81,7 @@ bool isIOSstub(u8 ios_number)
         u8 Version = ios_tmd->title_version; 
 		
 		if((boot2version >= 5) && (ios_number == 249 || ios_number == 250) && (Version < 18)) return true;
+		if(( ios_number == 202 || ios_number == 222 || ios_number == 223 || ios_number == 224) && (Version < 4)) return true; 
         //version now contains the last 2 bytes. as said above, if this is 00, its a stub 
         if ( Version == 0 ) 
         { 

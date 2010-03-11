@@ -41,7 +41,7 @@ s32 __Gui_DrawPng(void *img, u32 x, u32 y)
 	{
 		fdev = &fdevList[2];
 		Fat_Mount(fdev);
-		if (file_exists("usb:/wad/background.png")) ctx = PNGU_SelectImageFromDevice ("usb2:/wad/background.png");
+		if (file_exists("usb2:/wad/background.png")) ctx = PNGU_SelectImageFromDevice ("usb2:/wad/background.png");
 	}
 	
 	if(!ctx)
