@@ -1,3 +1,4 @@
+#labels Featured
                      =YET ANOTHER WAD MANAGER MOD (YAWMM)=
 
 ==[ DISCLAIMER ]:==
