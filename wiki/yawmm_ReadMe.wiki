@@ -53,8 +53,6 @@
   To use the NAND emulation is necessary to have a COMPLETE copy
   of the NAND filesystem in the root of the FAT device.
 
-  This will not install fakesigned wads with cIOS249 rev18+ or 
-  Hermes cIOS 202/223/224 v5 unless IOS 38 is used as a base.
 
 ==;[ CONFIG FILE USAGE ]:==
 
