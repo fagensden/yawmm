@@ -252,6 +252,9 @@ void __Wad_FixTicket(signed_blob *p_tik)
 	/* Check common key */
 	if (*ckey > 1)
 		*ckey = 0;
+		
+	 /* Fakesign ticket */
+	 Title_FakesignTik(p_tik);
 }
 
 s32 Wad_Install(FILE *fp)
