@@ -271,7 +271,7 @@ int ReadConfigFile (char *configFilePath)
 						GetStringParam (tmpOutStr, tmpStr, MAX_FAT_DEVICE_LENGTH);
 						for (i = 0; i < 5; i++)
 						{
-							if (strncmp (fdevList[i].mount, tmpOutStr, 2) == 0)
+							if (strncmp (fdevList[i].mount, tmpOutStr, 4) == 0)
 							{
 								gConfig.fatDeviceIndex = i;
 							}

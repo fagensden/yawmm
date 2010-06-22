@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ogcsys.h>
-#include <smb.h>
+//#include <smb.h>
 
 #include "fat.h"
 

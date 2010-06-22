@@ -38,6 +38,7 @@ SMRegion regionlist[] = {
 	{416, 'J'}, {417, 'E'}, {418, 'P'},
 	{448, 'J'}, {449, 'E'}, {450, 'P'}, {454, 'K'},
 	{480, 'J'}, {481, 'E'}, {482, 'P'}, {486, 'K'},
+	{512, 'E'}, {513, 'E'}, {514, 'P'}, {518, 'K'},
 };
 
 #define NB_SM		(sizeof(regionlist) / sizeof(SMRegion))
